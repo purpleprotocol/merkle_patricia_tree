@@ -46,6 +46,7 @@ defmodule MerklePatriciaTree.Mixfile do
       {:ex_doc, "~> 0.16", only: :dev, runtime: false},
       {:hex_prefix, "~> 0.1.0"},
       {:ex_rlp, "~> 0.3.0"},
+      {:rox, "~> 2.2"},
       {:keccakf1600, "~> 2.0.0", hex: :keccakf1600_orig},
       {:exleveldb, "~> 0.13"},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
