@@ -20,7 +20,7 @@ defmodule MerklePatriciaTree.Trie do
   @type key :: binary() | [integer()]
 
   @empty_trie <<>>
-  @empty_trie_root_hash @empty_trie |> ExRLP.encode() |> :keccakf1600.sha3_256()
+  @empty_trie_root_hash @empty_trie |> ExRLP.encode() |> MerklePatriciaTree.Hash.blake2()
 
   @doc """
   Returns the canonical empty trie.

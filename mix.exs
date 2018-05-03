@@ -15,6 +15,8 @@ defmodule MerklePatriciaTree.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      compilers: [:rustler] ++ Mix.compilers,
+      rustler_crates: rustler_crates(),
       dialyzer: [ignore_warnings: ".dialyzer.ignore-warnings"]
     ]
   end
@@ -47,9 +49,17 @@ defmodule MerklePatriciaTree.Mixfile do
       {:hex_prefix, "~> 0.1.0"},
       {:ex_rlp, "~> 0.3.0"},
       {:rox, "~> 2.2"},
-      {:keccakf1600, "~> 2.0.0", hex: :keccakf1600_orig},
       {:rustler, "~> 0.16.0"},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+    ]
+  end
+
+  defp rustler_crates do
+    [
+      hash: [
+        path: "native/hash",
+        mode: (if Mix.env == :prod, do: :release, else: :debug),
+      ]
     ]
   end
 end
