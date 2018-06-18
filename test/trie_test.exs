@@ -1,8 +1,7 @@
 defmodule MerklePatriciaTree.TrieTest do
   use ExUnit.Case, async: true
-  doctest MerklePatriciaTree.Trie
 
-  alias MerklePatriciaTree.Trie
+  alias MerklePatriciaTree.{Trie, Hash}
   alias MerklePatriciaTree.Trie.Verifier
 
   @max_32_bits 4_294_967_296
@@ -18,7 +17,7 @@ defmodule MerklePatriciaTree.TrieTest do
   end
 
   def store(node_value, db) do
-    node_hash = :keccakf1600.sha3_256(node_value)
+    node_hash = Hash.blake2(node_value)
     MerklePatriciaTree.DB.put!(db, node_hash, node_value)
 
     node_hash
@@ -161,17 +160,7 @@ defmodule MerklePatriciaTree.TrieTest do
       assert Trie.get(trie_2, <<0x01::4, 0x02::4, 0x03::4>>) == "cool"
       assert Trie.get(trie_2, <<0x01::4, 0x02::4, 0x03::4, 0x04::4>>) == nil
     end
-
-    test "from blog post", %{db: db} do
-      trie = Trie.new(db)
-
-      trie_2 = Trie.update(trie, <<0x01::4, 0x01::4, 0x02::4>>, "hello")
-
-      assert trie_2.root_hash ==
-               <<73, 98, 206, 73, 94, 192, 23, 36, 174, 248, 169, 73, 103, 133, 200, 167, 68, 83,
-                 86, 207, 246, 91, 200, 242, 14, 115, 208, 252, 28, 74, 245, 130>>
-    end
-
+    
     test "update a leaf value (when stored directly)", %{db: db} do
       trie = Trie.new(db, leaf_node([0x01, 0x02], "first"))
       trie_2 = Trie.update(trie, <<0x01::4, 0x02::4>>, "second")
