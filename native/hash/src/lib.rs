@@ -4,8 +4,8 @@
 
 extern crate blake2;
 
-use rustler::{NifEnv, NifTerm, NifResult, NifEncoder};
-use rustler::types::binary::NifBinary;
+use rustler::{Env, Term, NifResult, Encoder};
+use rustler::types::binary::Binary;
 use blake2::Blake2b;
 use blake2::digest::{Input, VariableOutput};
 
@@ -15,8 +15,8 @@ rustler_export_nifs! {
   None
 }
 
-fn blake2<'a>(env: NifEnv<'a>, args: &[NifTerm<'a>]) -> NifResult<NifTerm<'a>> {
-  let arg: NifBinary = try!(args[0].decode());
+fn blake2<'a>(env: Env<'a>, args: &[Term<'a>]) -> NifResult<Term<'a>> {
+  let arg: Binary = try!(args[0].decode());
   let mut hasher = Blake2b::new(32).unwrap();
   let mut buf = [0u8; 32];
   let val = arg.as_slice();
