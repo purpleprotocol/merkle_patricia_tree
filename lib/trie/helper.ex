@@ -40,4 +40,9 @@ defmodule MerklePatriciaTree.Trie.Helper do
   def get_binary(l) do
     for x <- l, into: <<>>, do: <<x::4>>
   end
+
+  @spec random_string(integer) :: binary
+  def random_string(length) do
+    :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
+  end
 end
