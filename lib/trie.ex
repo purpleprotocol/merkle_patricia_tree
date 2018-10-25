@@ -147,21 +147,21 @@ defmodule MerklePatriciaTree.Trie do
     %{db: db_map, root_hash: rh} = trie
     db_id = Helper.random_string(32)
 
-    DB.GenServer.load_db(db_id, db_map)
-    usetrie = %{
-      db: {MerklePatriciaTree.DB.GenServer, db_id},
+    DB.Worker.load_db(db_id, db_map)
+    use_trie = %{
+      db: {MerklePatriciaTree.DB.Worker, db_id},
       root_hash: rh
     }
 
-    result = usetrie
+    result = use_trie
     |> Node.decode_trie()
-    |> Destroyer.remove_key(Helper.get_nibbles(key), usetrie)
-    |> Node.encode_node(usetrie)
-    |> into(usetrie)
+    |> Destroyer.remove_key(Helper.get_nibbles(key), use_trie)
+    |> Node.encode_node(use_trie)
+    |> into(use_trie)
     |> store
 
-    done_db = DB.GenServer.getdb(db_id)
-    DB.GenServer.delete_db(db_id)
+    done_db = DB.Worker.getdb(db_id)
+    DB.Worker.delete_db(db_id)
 
     %{
       db: done_db,
@@ -173,21 +173,21 @@ defmodule MerklePatriciaTree.Trie do
     %{db: db_map, root_hash: rh} = trie
     db_id = Helper.random_string(32)
 
-    DB.GenServer.load_db(db_id, db_map)
-    usetrie = %{
-      db: {MerklePatriciaTree.DB.GenServer, db_id},
+    DB.Worker.load_db(db_id, db_map)
+    use_trie = %{
+      db: {MerklePatriciaTree.DB.Worker, db_id},
       root_hash: rh
     }
 
-    result = usetrie
+    result = use_trie
     |> Node.decode_trie()
-    |> Builder.put_key(Helper.get_nibbles(key), value, usetrie)
-    |> Node.encode_node(usetrie)
-    |> into(usetrie)
+    |> Builder.put_key(Helper.get_nibbles(key), value, use_trie)
+    |> Node.encode_node(use_trie)
+    |> into(use_trie)
     |> store
 
-    done_db = DB.GenServer.getdb(db_id)
-    DB.GenServer.delete_db(db_id)
+    done_db = DB.Worker.getdb(db_id)
+    DB.Worker.delete_db(db_id)
 
     %{
       db: done_db,
