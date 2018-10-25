@@ -143,6 +143,58 @@ defmodule MerklePatriciaTree.Trie do
     |> store
   end
 
+  def update(:mock, trie, key, nil) do
+    %{db: db_map, root_hash: rh} = trie
+    db_id = Helper.random_string(32)
+
+    DB.Worker.load_db(db_id, db_map)
+    use_trie = %{
+      db: {MerklePatriciaTree.DB.Worker, db_id},
+      root_hash: rh
+    }
+
+    result = use_trie
+    |> Node.decode_trie()
+    |> Destroyer.remove_key(Helper.get_nibbles(key), use_trie)
+    |> Node.encode_node(use_trie)
+    |> into(use_trie)
+    |> store
+
+    done_db = DB.Worker.getdb(db_id)
+    DB.Worker.delete_db(db_id)
+
+    %{
+      db: done_db,
+      root_hash: result.root_hash
+    }
+  end
+
+  def update(:mock, trie, key, value) do
+    %{db: db_map, root_hash: rh} = trie
+    db_id = Helper.random_string(32)
+
+    DB.Worker.load_db(db_id, db_map)
+    use_trie = %{
+      db: {MerklePatriciaTree.DB.Worker, db_id},
+      root_hash: rh
+    }
+
+    result = use_trie
+    |> Node.decode_trie()
+    |> Builder.put_key(Helper.get_nibbles(key), value, use_trie)
+    |> Node.encode_node(use_trie)
+    |> into(use_trie)
+    |> store
+
+    done_db = DB.Worker.getdb(db_id)
+    DB.Worker.delete_db(db_id)
+
+    %{
+      db: done_db,
+      root_hash: result.root_hash
+    }
+  end
+
   def update(trie, key, value) do
     # We're going to recursively walk toward our key,
     # then we'll add our value (either a new leaf or the value
