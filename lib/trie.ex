@@ -82,6 +82,22 @@ defmodule MerklePatriciaTree.Trie do
     do_get(trie, Helper.get_nibbles(key))
   end
 
+  def get(:mock, trie, key) do
+    %{db: db_map, root_hash: rh} = trie
+    db_id = Helper.random_string(32)
+
+    DB.Worker.load_db(db_id, db_map)
+    use_trie = %{
+      db: {MerklePatriciaTree.DB.Worker, db_id},
+      root_hash: rh
+    }
+
+    result = do_get(use_trie, Helper.get_nibbles(key))
+    DB.Worker.delete_db(db_id)
+    
+    result
+  end
+
   @spec do_get(__MODULE__.t() | nil, [integer()]) :: binary() | nil
   defp do_get(nil, _), do: nil
 
